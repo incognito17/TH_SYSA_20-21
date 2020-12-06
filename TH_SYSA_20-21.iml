@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/SelbstorgKartenVorlage" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Traffic" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Chap_4_CellAutomat" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Chap4_CellAutomat" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
