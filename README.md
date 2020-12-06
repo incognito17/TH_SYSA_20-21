@@ -1,4 +1,5 @@
 # Exercises for school lecture "System Analysis"
 
 ## Contents:
-1. Directory: "Chap4_CellAutomat" --> Cellular automata
+* Directory: "cellautomat" --> Chapter 4: Cellular automata
+* Package "qlearning" --> Chapter 5: Agents (Machine learning, reinforcement learning etc.)
