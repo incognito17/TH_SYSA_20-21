@@ -93,27 +93,39 @@ public class MensaQueue {
         System.out.println();
 
         System.out.println("10 Kunden:");
-        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 10) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 10) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 10) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeZwischenankunftszeit: "
+                + Math.round (mensa.calculateAverage(intermArrivalTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: "
+                + Math.round (mensa.calculateAverage(servingTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: "
+                + Math.round (mensa.calculateAverage(waitingTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: "
+                + Math.round (mensa.calculateAverage(stayingDurations, 10) * 100.0) / 100.0);
 
 
         System.out.println("*****************************");
         System.out.println();
         System.out.println("1000 Kunden:");
-        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 1000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 1000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeZwischenankunftszeit: "
+                + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: "
+                + Math.round (mensa.calculateAverage(servingTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: "
+                + Math.round (mensa.calculateAverage(waitingTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: "
+                + Math.round (mensa.calculateAverage(stayingDurations, 1000) * 100.0) / 100.0);
 
         System.out.println("*****************************");
         System.out.println();
         System.out.println("1 000 000 Kunden:");
-        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 1000000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 1000000) * 100.0) / 100.0);
-        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeZwischenankunftszeit: "
+                + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: "
+                + Math.round (mensa.calculateAverage(servingTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: "
+                + Math.round (mensa.calculateAverage(waitingTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: "
+                + Math.round (mensa.calculateAverage(stayingDurations, 1000000) * 100.0) / 100.0);
     }
 
 }
