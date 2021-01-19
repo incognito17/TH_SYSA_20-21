@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class MensaQueue {
 
-    private double[][] table = new double[10][8];
+    private double[][] table = new double[1000000][8];
 
     private double[] generateExponentialTimes(int length, double rate) {
         double[] exponentialTimesArr = new double[length];
@@ -53,49 +53,67 @@ public class MensaQueue {
         return stayingDur;
     }
 
-    private double calculateAverage(double[] valueArr) {
+    private double calculateAverage(double[] valueArr, int count) {
         double sum = 0.0;
-        for (int i = 0; i < valueArr.length; i++){
+        for (int i = 0; i < count; i++){
             sum += valueArr[i];
         }
-        return sum / valueArr.length;
+        return sum / count;
     }
 
 
     public static void main(String[] args) {
 
-        MensaQueue test = new MensaQueue();
-        double[] intermArrivalTimes = test.generateExponentialTimes(10, 0.8);
-        double[] arrivalTimes = test.calculateArrivalTime(intermArrivalTimes);
-        double[] servingTimes = test.generateExponentialTimes(10, 0.7);
-        double[][] servingStartAndEnd = test.calculateServingStartAndEnd(arrivalTimes, servingTimes);
+        MensaQueue mensa = new MensaQueue();
+        double[] intermArrivalTimes = mensa.generateExponentialTimes(1000000, 0.8);
+        double[] arrivalTimes = mensa.calculateArrivalTime(intermArrivalTimes);
+        double[] servingTimes = mensa.generateExponentialTimes(1000000, 0.7);
+        double[][] servingStartAndEnd = mensa.calculateServingStartAndEnd(arrivalTimes, servingTimes);
         double[] servingBegin = servingStartAndEnd[0];
         double[] servingEnd = servingStartAndEnd[1];
-        double[] waitingTimes = test.calculateWaitingTimes(arrivalTimes, servingBegin);
-        double[] stayingDurations = test.calculateStayingDuration(arrivalTimes, servingEnd);
+        double[] waitingTimes = mensa.calculateWaitingTimes(arrivalTimes, servingBegin);
+        double[] stayingDurations = mensa.calculateStayingDuration(arrivalTimes, servingEnd);
 
         System.out.println();
         System.out.println();
         System.out.println("*****************************");
         System.out.println("A      B      C     D    E      F    G     H");
-        for (int i = 0; i < test.table.length; i++) {
-            test.table[i][0] = i+1;
-            test.table[i][1] = Math.round (intermArrivalTimes[i] * 100.0) / 100.0;
-            test.table[i][2] = Math.round (arrivalTimes[i] * 100.0) / 100.0;
-            test.table[i][3] = Math.round (servingTimes[i] * 100.0) / 100.0;
-            test.table[i][4] = Math.round (servingBegin[i] * 100.0) / 100.0;
-            test.table[i][5] = Math.round (servingEnd[i] * 100.0) / 100.0;
-            test.table[i][6] = Math.round (waitingTimes[i] * 100.0) / 100.0;
-            test.table[i][7] = Math.round (stayingDurations[i] * 100.0) / 100.0;
-            System.out.println(Arrays.toString(test.table[i]));
+        for (int i = 0; i < 10; i++) {
+            mensa.table[i][0] = i+1;
+            mensa.table[i][1] = Math.round (intermArrivalTimes[i] * 100.0) / 100.0;
+            mensa.table[i][2] = Math.round (arrivalTimes[i] * 100.0) / 100.0;
+            mensa.table[i][3] = Math.round (servingTimes[i] * 100.0) / 100.0;
+            mensa.table[i][4] = Math.round (servingBegin[i] * 100.0) / 100.0;
+            mensa.table[i][5] = Math.round (servingEnd[i] * 100.0) / 100.0;
+            mensa.table[i][6] = Math.round (waitingTimes[i] * 100.0) / 100.0;
+            mensa.table[i][7] = Math.round (stayingDurations[i] * 100.0) / 100.0;
+            System.out.println(Arrays.toString(mensa.table[i]));
         }
         System.out.println("*****************************");
         System.out.println();
 
-        System.out.println("Durchschnitt summeZwischenankunftszeit: " + test.calculateAverage(intermArrivalTimes));
-        System.out.println("Durchschnitt summeBediendauer: " + test.calculateAverage(servingTimes));
-        System.out.println("Durchschnitt summeWartezeit: " + test.calculateAverage(waitingTimes));
-        System.out.println("Durchschnitt summeVerweilzeit: " + test.calculateAverage(stayingDurations));
+        System.out.println("10 Kunden:");
+        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 10) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 10) * 100.0) / 100.0);
+
+
+        System.out.println("*****************************");
+        System.out.println();
+        System.out.println("1000 Kunden:");
+        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 1000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 1000) * 100.0) / 100.0);
+
+        System.out.println("*****************************");
+        System.out.println();
+        System.out.println("1 000 000 Kunden:");
+        System.out.println("Durchschnitt summeZwischenankunftszeit: " + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeBediendauer: " + Math.round (mensa.calculateAverage(servingTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeWartezeit: " + Math.round (mensa.calculateAverage(waitingTimes, 1000000) * 100.0) / 100.0);
+        System.out.println("Durchschnitt summeVerweilzeit: " + Math.round (mensa.calculateAverage(stayingDurations, 1000000) * 100.0) / 100.0);
     }
 
 }
