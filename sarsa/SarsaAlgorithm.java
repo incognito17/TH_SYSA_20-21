@@ -26,6 +26,13 @@ public class SarsaAlgorithm {
     private final Random zufall = new Random(123);
 
     public SarsaAlgorithm() {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("----------###----------");
+        System.out.println("---------SARSA---------");
+        System.out.println("-----------#-----------");
+        System.out.println();
         learning();
         ergebnisBerechnen();
         QMatrixAusgeben();
@@ -45,6 +52,7 @@ public class SarsaAlgorithm {
 
     // suche in einer Zeile der Q-Matrix den hoechsten Wert
     private int[] max(int action) {
+        System.out.println("MAXIMUM");
         int[] ar = Q[action].clone();
         Arrays.sort(ar);
         int qMaxValue = ar[Q_SIZE - 1];
@@ -56,19 +64,22 @@ public class SarsaAlgorithm {
                 break;
             }
         }
-
+        System.out.println("-----> MaxState: " + state);
         return new int[]{state, qMaxValue};
     }
 
     private int[] getRandomAction(int action) {
+        System.out.println("RANDOM");
         int[] ar = Q[action].clone();
         int randomState = new Random().nextInt(ar.length);
+        System.out.println("-----> RandomState: " + randomState);
         return new int[]{randomState, ar[randomState]};
     }
 
     private int[] epsilonGreedyPolicy(int action) {
         double EPSILON = 0.3;
         double random = Math.random();
+        System.out.println("EPSILLON-RANDOM: " + random);
         if (random < EPSILON) {
             return this.getRandomAction(action);
         } else {
@@ -77,12 +88,13 @@ public class SarsaAlgorithm {
     }
 
     private int chooseAnActionWithEpsilonGreedy(int currentState) {
+        System.out.println("CURRENT-STATE: " + currentState);
         int nextState;
         do {
             // Sucht zufaellig einen moeglichen Wert != -1
             nextState = this.epsilonGreedyPolicy(currentState)[0];
         } while (R[currentState][nextState] == -1);
-
+        System.out.println("NEXTSTATE: " + nextState);
         // keine Aktualisierung der Q-Matrix bei Endzustand
         if (currentState == 5) {
             return 5;
@@ -92,6 +104,7 @@ public class SarsaAlgorithm {
         double ALPHA = 0.5;
         int qValue = this.epsilonGreedyPolicy(nextState)[1];
         Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * qValue));
+        QMatrixAusgeben();
 
         currentState = nextState;
         return currentState;
@@ -99,11 +112,11 @@ public class SarsaAlgorithm {
 
     private void episode(final int initialState) {
         int currentState = initialState;
-        System.out.print("initialState: " + initialState + " ");
+        System.out.println("initialState: " + initialState + " ");
         // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
             currentState = chooseAnActionWithEpsilonGreedy(currentState);
-            System.out.print("currSt: " + currentState + " ");
+            System.out.println("currSt: " + currentState + " ");
         } while (currentState != 5);
         System.out.println();
     }
@@ -113,6 +126,7 @@ public class SarsaAlgorithm {
         // Anzahl Episoden, z.B. 100
         int ITERATIONS = 100;
         for (int j = 0; j < ITERATIONS; j++) {
+            System.out.println("---> ITERATION " + j);
             for (int i = 0; i < Q_SIZE; i++) {
                 episode(INITIAL_STATES[i]);
             }
