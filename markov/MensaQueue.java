@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class MensaQueue {
 
-    private double[][] table = new double[1000000][8];
+    private final double[][] TABLE = new double[1000000][8];
 
     private double[] generateExponentialTimes(int length, double rate) {
         double[] exponentialTimesArr = new double[length];
@@ -77,17 +77,17 @@ public class MensaQueue {
         System.out.println();
         System.out.println();
         System.out.println("*****************************");
-        System.out.println("A      B      C     D    E      F    G     H");
+        System.out.println(" A     B      C     D    E      F    G     H");
         for (int i = 0; i < 10; i++) {
-            mensa.table[i][0] = i+1;
-            mensa.table[i][1] = Math.round (intermArrivalTimes[i] * 100.0) / 100.0;
-            mensa.table[i][2] = Math.round (arrivalTimes[i] * 100.0) / 100.0;
-            mensa.table[i][3] = Math.round (servingTimes[i] * 100.0) / 100.0;
-            mensa.table[i][4] = Math.round (servingBegin[i] * 100.0) / 100.0;
-            mensa.table[i][5] = Math.round (servingEnd[i] * 100.0) / 100.0;
-            mensa.table[i][6] = Math.round (waitingTimes[i] * 100.0) / 100.0;
-            mensa.table[i][7] = Math.round (stayingDurations[i] * 100.0) / 100.0;
-            System.out.println(Arrays.toString(mensa.table[i]));
+            mensa.TABLE[i][0] = i+1;
+            mensa.TABLE[i][1] = Math.round (intermArrivalTimes[i] * 100.0) / 100.0;
+            mensa.TABLE[i][2] = Math.round (arrivalTimes[i] * 100.0) / 100.0;
+            mensa.TABLE[i][3] = Math.round (servingTimes[i] * 100.0) / 100.0;
+            mensa.TABLE[i][4] = Math.round (servingBegin[i] * 100.0) / 100.0;
+            mensa.TABLE[i][5] = Math.round (servingEnd[i] * 100.0) / 100.0;
+            mensa.TABLE[i][6] = Math.round (waitingTimes[i] * 100.0) / 100.0;
+            mensa.TABLE[i][7] = Math.round (stayingDurations[i] * 100.0) / 100.0;
+            System.out.println(Arrays.toString(mensa.TABLE[i]));
         }
         System.out.println("*****************************");
         System.out.println();
@@ -105,7 +105,7 @@ public class MensaQueue {
 
         System.out.println("*****************************");
         System.out.println();
-        System.out.println("1000 Kunden:");
+        System.out.println("1 000 Kunden:");
         System.out.println("Durchschnitt summeZwischenankunftszeit: "
                 + Math.round (mensa.calculateAverage(intermArrivalTimes, 1000) * 100.0) / 100.0);
         System.out.println("Durchschnitt summeBediendauer: "
