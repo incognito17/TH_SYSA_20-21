@@ -6,18 +6,20 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class SarsaAlgorithm {
-    private final int Q_SIZE = 6;
-    private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5 };
+    private final int Q_SIZE = 8;
+    private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
     // Beispiel Belohnungsmatrix R
     private final int[][] R = new int[][] {
 
-            // 0  1   2  3   4   5
-            { -1, 0, -1, 0, -1, -1 },   // 0
-            { 0, -1, 0, -1, 0, -1 },    // 1
-            { -1, 0, -1, -1, -1, 100 }, // 2
-            { 0, -1, -1, -1, 0, -1 },    // 3
-            { -1, 0, -1, 0, -1, 100 },  // 4
-            { -1, -1, -1, -1, -1, 100 }   // 5
+            // 0   1   2   3   4   5   6   7
+            { -1,  0, -1, -1, -1, -1, -1, 100 },    // 0
+            {  0, -1,  0, -1, -1, -1, -1, -1 },     // 1
+            { -1,  0, -1, -1, -1,  0, -1, -1 },     // 2
+            { -1, -1, -1, -1, -1, -1,  0, -1 },     // 3
+            { -1, -1, -1, -1, -1, -1,  0, -1 },     // 4
+            { -1, -1,  0, -1, -1, -1,  0, -1 },     // 5
+            { -1, -1, -1,  0,  0,  0, -1, 100 },    // 6
+            {  0, -1, -1, -1, -1, -1,  0, 100 }     // 7
 
     };
 
@@ -96,8 +98,8 @@ public class SarsaAlgorithm {
         } while (R[currentState][nextState] == -1);
         System.out.println("NEXTSTATE: " + nextState);
         // keine Aktualisierung der Q-Matrix bei Endzustand
-        if (currentState == 5) {
-            return 5;
+        if (currentState == 7) {
+            return 7;
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
@@ -117,14 +119,14 @@ public class SarsaAlgorithm {
         do {
             currentState = chooseAnActionWithEpsilonGreedy(currentState);
             System.out.println("currSt: " + currentState + " ");
-        } while (currentState != 5);
+        } while (currentState != 7);
         System.out.println();
     }
 
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 100;
+        int ITERATIONS = 1000;
         for (int j = 0; j < ITERATIONS; j++) {
             System.out.println("---> ITERATION " + j);
             for (int i = 0; i < Q_SIZE; i++) {
@@ -142,7 +144,7 @@ public class SarsaAlgorithm {
             currentState = INITIAL_STATES[i];
             int newState;
             int highValue;
-            while (currentState < 5) {
+            while (currentState < 7) {
                 highValue = max(currentState)[1];
                 for (newState = 0; newState < Q_SIZE; newState++) {
                     if (highValue == Q[currentState][newState]) {
@@ -152,8 +154,8 @@ public class SarsaAlgorithm {
                 System.out.print(currentState + ", ");
                 currentState = newState;
             }
-            // Ausgabe von 5 als Zielzustand
-            System.out.print("5\n");
+            // Ausgabe von 7 als Zielzustand
+            System.out.print("7\n");
         }
     }
 
