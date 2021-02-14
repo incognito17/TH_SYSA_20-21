@@ -44,17 +44,43 @@ public class SarsaAlgorithm {
     }
 
     // suche in einer Zeile der Q-Matrix den hoechsten Wert
-    private int max(int action) {
+    private int[] max(int action) {
         int[] ar = Q[action].clone();
         Arrays.sort(ar);
-        return ar[Q_SIZE - 1];
+        int qMaxValue = ar[Q_SIZE - 1];
+        int state = -1;
+
+        for (int i = 0; i < Q_SIZE; i++) {
+            if (Q[action][i] == qMaxValue) {
+                state = i;
+                break;
+            }
+        }
+
+        return new int[]{state, qMaxValue};
     }
 
-    private int chooseAnAction(int currentState) {
+    private int[] getRandomAction(int action) {
+        int[] ar = Q[action].clone();
+        int randomState = new Random().nextInt(ar.length);
+        return new int[]{randomState, ar[randomState]};
+    }
+
+    private int[] epsilonGreedyPolicy(int action) {
+        double EPSILON = 0.3;
+        double random = Math.random();
+        if (random < EPSILON) {
+            return this.getRandomAction(action);
+        } else {
+            return this.max(action);
+        }
+    }
+
+    private int chooseAnActionWithEpsilonGreedy(int currentState) {
         int nextState;
         do {
             // Sucht zufaellig einen moeglichen Wert != -1
-            nextState = zufall.nextInt(Q_SIZE);
+            nextState = this.epsilonGreedyPolicy(currentState)[0];
         } while (R[currentState][nextState] == -1);
 
         // keine Aktualisierung der Q-Matrix bei Endzustand
@@ -64,7 +90,8 @@ public class SarsaAlgorithm {
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
         double ALPHA = 0.5;
-        Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * max(nextState)));
+        int qValue = this.epsilonGreedyPolicy(nextState)[1];
+        Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * qValue));
 
         currentState = nextState;
         return currentState;
@@ -75,7 +102,7 @@ public class SarsaAlgorithm {
         System.out.print("initialState: " + initialState + " ");
         // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
-            currentState = chooseAnAction(currentState);
+            currentState = chooseAnActionWithEpsilonGreedy(currentState);
             System.out.print("currSt: " + currentState + " ");
         } while (currentState != 5);
         System.out.println();
@@ -102,7 +129,7 @@ public class SarsaAlgorithm {
             int newState;
             int highValue;
             while (currentState < 5) {
-                highValue = max(currentState);
+                highValue = max(currentState)[1];
                 for (newState = 0; newState < Q_SIZE; newState++) {
                     if (highValue == Q[currentState][newState]) {
                         break;
