@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class SarsaAlgorithm {
+
     private final int Q_SIZE = 8;
     private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
-    // Beispiel Belohnungsmatrix R
+
+    // The reward matrix R which resembles the current labyrinth with valid paths and reward points
     private final int[][] R = new int[][] {
 
             // 0   1   2   3   4   5   6   7
@@ -23,9 +25,8 @@ public class SarsaAlgorithm {
 
     };
 
-    // Wissen des Agenten in Q-Matrix:
+    // Q-Matrix which contains the agent's knowledge
     private final int[][] Q = new int[Q_SIZE][Q_SIZE];
-    private final Random zufall = new Random(123);
 
     public SarsaAlgorithm() {
         System.out.println();
@@ -35,12 +36,16 @@ public class SarsaAlgorithm {
         System.out.println("---------SARSA---------");
         System.out.println("-----------#-----------");
         System.out.println();
+
         learning();
-        ergebnisBerechnen();
-        QMatrixAusgeben();
+        calculatePaths();
+        printQMatrix();
     }
 
-    private void QMatrixAusgeben() {
+    /**
+     * Prints the current state of the Q-Matrix
+     */
+    private void printQMatrix() {
         // Ausgabe der Q Matrix
         System.out.println("Q Matrix values:");
         for (int i = 0; i < Q_SIZE; i++) {
@@ -53,8 +58,12 @@ public class SarsaAlgorithm {
     }
 
     // suche in einer Zeile der Q-Matrix den hoechsten Wert
+    /**
+     *
+     * @param action
+     * @return
+     */
     private int[] max(int action) {
-        System.out.println("MAXIMUM");
         int[] ar = Q[action].clone();
         Arrays.sort(ar);
         int qMaxValue = ar[Q_SIZE - 1];
@@ -66,22 +75,28 @@ public class SarsaAlgorithm {
                 break;
             }
         }
-        System.out.println("-----> MaxState: " + state);
-        return new int[]{state, qMaxValue};
+        return new int[] {state, qMaxValue};
     }
 
+    /**
+     *
+     * @param action
+     * @return
+     */
     private int[] getRandomAction(int action) {
-        System.out.println("RANDOM");
         int[] ar = Q[action].clone();
         int randomState = new Random().nextInt(ar.length);
-        System.out.println("-----> RandomState: " + randomState);
-        return new int[]{randomState, ar[randomState]};
+        return new int[] {randomState, ar[randomState]};
     }
 
+    /**
+     *
+     * @param action
+     * @return
+     */
     private int[] epsilonGreedyPolicy(int action) {
         double EPSILON = 0.3;
         double random = Math.random();
-        System.out.println("EPSILLON-RANDOM: " + random);
         if (random < EPSILON) {
             return this.getRandomAction(action);
         } else {
@@ -89,44 +104,54 @@ public class SarsaAlgorithm {
         }
     }
 
-    private int chooseAnActionWithEpsilonGreedy(int currentState) {
-        System.out.println("CURRENT-STATE: " + currentState);
+    /**
+     *
+     * @param currentState
+     * @return
+     */
+    private int chooseActionWithEpsilonGreedy(int currentState) {
         int nextState;
+
         do {
             // Sucht zufaellig einen moeglichen Wert != -1
             nextState = this.epsilonGreedyPolicy(currentState)[0];
         } while (R[currentState][nextState] == -1);
-        System.out.println("NEXTSTATE: " + nextState);
         // keine Aktualisierung der Q-Matrix bei Endzustand
         if (currentState == 7) {
             return 7;
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
-        double ALPHA = 0.5;
+        double ALPHA = 0.7;
         int qValue = this.epsilonGreedyPolicy(nextState)[1];
         Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * qValue));
-        QMatrixAusgeben();
 
         currentState = nextState;
         return currentState;
     }
 
+    /**
+     *
+     * @param initialState
+     */
     private void episode(final int initialState) {
         int currentState = initialState;
         System.out.println("initialState: " + initialState + " ");
         // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
-            currentState = chooseAnActionWithEpsilonGreedy(currentState);
+            currentState = chooseActionWithEpsilonGreedy(currentState);
             System.out.println("currSt: " + currentState + " ");
         } while (currentState != 7);
         System.out.println();
     }
 
+    /**
+     *
+     */
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 1000;
+        int ITERATIONS = 5000;
         for (int j = 0; j < ITERATIONS; j++) {
             System.out.println("---> ITERATION " + j);
             for (int i = 0; i < Q_SIZE; i++) {
@@ -136,14 +161,14 @@ public class SarsaAlgorithm {
         }
     }
 
-    private void ergebnisBerechnen() {
+    private void calculatePaths() {
         // Ausgabe der kuerzesten Routen
         System.out.println("Kuerzeste Pfade von den Ausgangszustaenden:");
         int currentState;
         for (int i = 0; i < Q_SIZE; i++) {
             currentState = INITIAL_STATES[i];
             int newState;
-            int highValue;
+            int highValue = 0;
             while (currentState < 7) {
                 highValue = max(currentState)[1];
                 for (newState = 0; newState < Q_SIZE; newState++) {
@@ -151,11 +176,18 @@ public class SarsaAlgorithm {
                         break;
                     }
                 }
-                System.out.print(currentState + ", ");
-                currentState = newState;
+                if (highValue == 0) {
+                    System.out.println("Path not correctly found");
+                    break;
+                } else {
+                    System.out.print(currentState + ", ");
+                    currentState = newState;
+                }
             }
-            // Ausgabe von 7 als Zielzustand
-            System.out.print("7\n");
+            if (highValue != 0) {
+                // Ausgabe von 7 als Zielzustand
+                System.out.print("7\n");
+            }
         }
     }
 
