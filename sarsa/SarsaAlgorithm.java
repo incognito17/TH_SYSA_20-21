@@ -120,7 +120,7 @@ public class SarsaAlgorithm {
      * @return
      */
     private int[] epsilonGreedyPolicy(int action) {
-        double EPSILON = 0.3;
+        double EPSILON = 0.15;
         double random = Math.random();
         if (random < EPSILON) {
             return this.getRandomAction(action);
@@ -147,7 +147,7 @@ public class SarsaAlgorithm {
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
-        double ALPHA = 0.8;
+        double ALPHA = 0.7;
         int qValue = this.epsilonGreedyPolicy(nextState)[1];
         Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * qValue));
 
@@ -161,13 +161,10 @@ public class SarsaAlgorithm {
      */
     private void episode(final int initialState) {
         int currentState = initialState;
-        System.out.println("initialState: " + initialState + " ");
         // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
             currentState = chooseActionWithEpsilonGreedy(currentState);
-            System.out.println("currSt: " + currentState + " ");
         } while (currentState != 32);
-        System.out.println();
     }
 
     /**
@@ -176,11 +173,11 @@ public class SarsaAlgorithm {
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 50000;
+        int ITERATIONS = 5000;
         for (int j = 0; j < ITERATIONS; j++) {
-            System.out.println("---> ITERATION " + j);
-            for (int i = 0; i < INITIAL_STATES.length; i++) {
-                episode(INITIAL_STATES[i]);
+            System.out.println("ITERATIONS " + j + "/" + ITERATIONS);
+            for (int initial_state : INITIAL_STATES) {
+                episode(initial_state);
             }
             // QMatrixAusgeben();
         }
@@ -188,10 +185,12 @@ public class SarsaAlgorithm {
 
     private void calculatePaths() {
         // Ausgabe der kuerzesten Routen
+        System.out.println();
+        System.out.println();
         System.out.println("Kuerzeste Pfade von den Ausgangszustaenden:");
         int currentState;
-        for (int i = 0; i < INITIAL_STATES.length; i++) {
-            currentState = INITIAL_STATES[i];
+        for (int initial_state : INITIAL_STATES) {
+            currentState = initial_state;
             System.out.print("Path from [" + currentState + "]: ");
             int newState;
             int highValue = 0;
