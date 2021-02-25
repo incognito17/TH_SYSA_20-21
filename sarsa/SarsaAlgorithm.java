@@ -6,8 +6,6 @@ by Prof. Dr. F. Mehler in TH Bingen. The primary source though for this code is:
 http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
  */
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.Arrays;
 import java.util.Random;
 
@@ -29,15 +27,15 @@ public class SarsaAlgorithm {
             // 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32
             { -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 0
             { -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 1
-            { -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,1000},  // 2
-            { -1, -1, -1, -1, -1, -1, 200,-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 3
+            { -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 100},  // 2
+            { -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 3
             {  0, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 4
             { -1,  0, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 5
-            { -1, -1, 500, 0, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 6
+            { -1, -1,  0,  0, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 6
             { -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 7
             { -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 8
-            { -1, -1, -1, -1, -1,  0, 200,-1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 9
-            { -1, -1, -1, -1, -1, -1, 200,-1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 10
+            { -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 9
+            { -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 10
             { -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 11
             { -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 12
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 13
@@ -52,14 +50,14 @@ public class SarsaAlgorithm {
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 22
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },  // 23
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1 },  // 24
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 500, 0, -1, -1, -1 },  // 25
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1 },  // 25
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1 },  // 26
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1,  0,  0, -1 },  // 27
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,1000},  // 28
-            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 200, 0, -1, -1, -1, -1, -1, -1 },  // 29
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, 100},  // 28
+            { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1 },  // 29
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1 },  // 30
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1 },  // 31
-            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1,1000}  // 32
+            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}  // 32
 
     };
 
@@ -106,11 +104,15 @@ public class SarsaAlgorithm {
         System.out.println();
         System.out.println("-== Q Matrix values: ==-");
         System.out.println();
-        System.out.println("   [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32]");
+        System.out.println("\t   [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32]");
         for (int i = 0; i < Q_SIZE; i++) {
-            System.out.print("[" + i + "] ");
+            if (i < 10) {
+                System.out.print(" [" + i + "]\t");
+            } else {
+                System.out.print("[" + i + "]\t");
+            }
             for (int j = 0; j < Q_SIZE; j++) {
-                if (Q[i][j] != 0) {
+                if (Q[i][j] > 0) {
                     System.out.print(Q[i][j] + " ");
                 } else {
                     System.out.print(Q[i][j] + ",\t");
@@ -152,9 +154,11 @@ public class SarsaAlgorithm {
     }
 
     /**
-     * Selects randomly a state from the Q-Matrix as the next action for an input action.
+     * Selects randomly a state from the Q-Matrix as the next action for an input state.
+     * Only states from valid transitions are chosen (R-Matrix value for this
+     * action from state to randomstate mustn't be -1
      *
-     * @param action - input state/action for which the next action
+     * @param state - input state/room for which the next action
      *               is chosen randomly from the corresponding Q-Matrix row
      *
      * @return int array - an array with the length of 2
@@ -163,28 +167,40 @@ public class SarsaAlgorithm {
      *                    which is the number of the returned state,
      *                    the second value is this state's Q-Value
      */
-    private int[] getRandomAction(int action) {
-        int[] ar = Q[action].clone();
-        int randomState = new Random().nextInt(ar.length);
-        return new int[] {randomState, ar[randomState]};
+    private int[] getRandomAction(int state) {
+        int randomState;
+        int[] qValues = Q[state].clone();
+        // Sucht zufaellig einen moeglichen Wert != -1
+        do {
+            randomState = new Random().nextInt(qValues.length);
+        } while (R[state][randomState] == -1);
+        return new int[] {randomState, qValues[randomState]};
     }
 
     /**
      * This function bears the functionality of the ε-greedy Policy and returns either
-     * the best next state or a random state for an action given. This is depending from
-     * the value of the 'epsilon' variable, which is declared in this function.
+     * the best next state or a random state for an action given. This is dependent from the
+     * value of the 'epsilon' variable and a random number, which are declared in this function.
      *
-     * @param action
-     * @return
+     * @param action - input state/action for which the next action is selected with the ε-greedy Policy
+     *
+     * @return int array - an array with the length of 2
+     *                    which represents the state returned.
+     *                    The first value from this array is 'state'
+     *                    is the number of the returned state,
+     *                    the second value is this state's Q-Value
      */
     private int[] epsilonGreedyPolicy(int action) {
         double epsilon = 0.15;
+
+        // A random number between 0 and 1
         double random = Math.random();
-        if (random < epsilon) {
-            return this.getRandomAction(action);
-        } else {
-            return this.getMaxAction(action);
-        }
+
+        /*
+        If the random number is smaller than epsilon - return a random action,
+        otherwise return an action with maximum Q-Value
+         */
+        return random < epsilon ? this.getRandomAction(action) : this.getMaxAction(action);
     }
 
     /**
@@ -192,13 +208,10 @@ public class SarsaAlgorithm {
      * @param currentState
      * @return
      */
-    private int chooseActionWithEpsilonGreedy(int currentState) {
-        int nextState;
+    private int chooseNextAction(int currentState) {
 
-        do {
-            // Sucht zufaellig einen moeglichen Wert != -1
-            nextState = this.epsilonGreedyPolicy(currentState)[0];
-        } while (R[currentState][nextState] == -1);
+        int nextState = this.epsilonGreedyPolicy(currentState)[0];
+
         // keine Aktualisierung der Q-Matrix bei Endzustand
         if (currentState == 32) {
             return 32;
@@ -221,7 +234,7 @@ public class SarsaAlgorithm {
         int currentState = initialState;
         // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
-            currentState = chooseActionWithEpsilonGreedy(currentState);
+            currentState = chooseNextAction(currentState);
         } while (currentState != 32);
     }
 
@@ -245,7 +258,7 @@ public class SarsaAlgorithm {
         System.out.println("----------------------------------------------");
         System.out.println();
         System.out.println();
-        System.out.println("Kuerzeste Pfade von den Ausgangszustaenden:");
+        System.out.println("Shortest paths out of each room:");
         System.out.println();
         int currentState;
         for (int initial_state : INITIAL_STATES) {
@@ -270,7 +283,7 @@ public class SarsaAlgorithm {
             }
             if (highValue != 0) {
                 // Ausgabe des Zielzustandes
-                System.out.print("<32>\n");
+                System.out.print("<<32>>\n");
             }
         }
     }
