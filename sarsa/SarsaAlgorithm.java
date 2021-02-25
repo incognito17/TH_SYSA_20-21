@@ -1,14 +1,25 @@
 package sarsa;
 
-// Quelle: http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
-//teilweise korrigiert F. Mehler, marcel.meinerz , 2017
+/*
+The code below is based on the code for the Q-Learning algorithm from the lecture Systemanalysis ("SYSA")
+by Prof. Dr. F. Mehler in TH Bingen. The primary source though for this code is:
+http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
+ */
+
 import java.util.Arrays;
 import java.util.Random;
 
+/**
+ * This class performs the reinforcement learning algorithm "SARSA" on a 32-room maze and searches with the help of it
+ * a shortest possible way out, out of each room. (Optionally it can do the same task with the Q-Learning algorithm).
+ */
 public class SarsaAlgorithm {
 
+    // Size of the Q-Matrix. This constant is important through the whole algorithm.
     private final int Q_SIZE = 33;
-    private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, };
+
+    // These are the starting rooms, from which the search for a way out will begin successively.
+    private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
 
     // The reward matrix R which resembles the current labyrinth with valid paths and reward points
     private final int[][] R = new int[][] {
@@ -46,14 +57,21 @@ public class SarsaAlgorithm {
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  200,  0, -1, -1, -1, -1, -1, -1 },  // 29
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1 },  // 30
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1 },  // 31
-            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 1000},  // 32
+            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 1000}  // 32
 
     };
 
-    // Q-Matrix which contains the agent's knowledge
+    // Q-Matrix which contains the agent's knowledge. It has the same size as the reward matrix R.
     private final int[][] Q = new int[Q_SIZE][Q_SIZE];
 
+    /**
+     * The actual SARSA algorithm. The process in this class has three major steps (see below).
+     */
     public SarsaAlgorithm() {
+
+        /*
+        Some visual output for the console indicating the start of the program.
+         */
         System.out.println();
         System.out.println();
         System.out.println();
@@ -62,8 +80,16 @@ public class SarsaAlgorithm {
         System.out.println("-----------#-----------");
         System.out.println();
 
+        /*
+         Step 1. The agent learns his environment with the help of the algorithm,
+         it's action-selection-policy and both of the matrices Q and R.
+         */
         learning();
+
+        // Step 2. In this step all the shortest paths from each single room (if such were found) are read and printed out to the console.
         calculatePaths();
+
+        // Step 3.
         printQMatrix();
     }
 
@@ -72,10 +98,19 @@ public class SarsaAlgorithm {
      */
     private void printQMatrix() {
         // Ausgabe der Q Matrix
-        System.out.println("Q Matrix values:");
+        System.out.println();
+        System.out.println();
+        System.out.println("-== Q Matrix values: ==-");
+        System.out.println();
+        System.out.println("   [0] [1] [2] [3] [4] [5] [6] [7] [8] [9] [10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31][32]");
         for (int i = 0; i < Q_SIZE; i++) {
+            System.out.print("[" + i + "] ");
             for (int j = 0; j < Q_SIZE; j++) {
-                System.out.print(Q[i][j] + ",\t");
+                if (Q[i][j] != 0) {
+                    System.out.print(Q[i][j] + " ");
+                } else {
+                    System.out.print(Q[i][j] + ",\t");
+                }
             }
             System.out.println();
         }
@@ -173,21 +208,22 @@ public class SarsaAlgorithm {
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 5000;
+        int ITERATIONS = 100;
         for (int j = 0; j < ITERATIONS; j++) {
-            System.out.println("ITERATIONS " + j + "/" + ITERATIONS);
+            System.out.println("ITERATION " + j + "/" + ITERATIONS);
             for (int initial_state : INITIAL_STATES) {
                 episode(initial_state);
             }
-            // QMatrixAusgeben();
         }
     }
 
     private void calculatePaths() {
         // Ausgabe der kuerzesten Routen
+        System.out.println("----------------------------------------------");
         System.out.println();
         System.out.println();
         System.out.println("Kuerzeste Pfade von den Ausgangszustaenden:");
+        System.out.println();
         int currentState;
         for (int initial_state : INITIAL_STATES) {
             currentState = initial_state;
