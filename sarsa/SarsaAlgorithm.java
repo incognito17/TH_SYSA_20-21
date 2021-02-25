@@ -6,6 +6,8 @@ by Prof. Dr. F. Mehler in TH Bingen. The primary source though for this code is:
 http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
  */
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -86,18 +88,20 @@ public class SarsaAlgorithm {
          */
         learning();
 
-        // Step 2. In this step all the shortest paths from each single room (if such were found) are read and printed out to the console.
+        /*
+        Step 2. In this step all the shortest paths from each single room
+        (if such were found) are read and printed out to the console.
+         */
         calculatePaths();
 
-        // Step 3.
+        // Step 3. At the end the final state of the Q-Matrix is printed to the console.
         printQMatrix();
     }
 
     /**
-     * Prints the current state of the Q-Matrix
+     * Prints the current state of the Q-Matrix to the console
      */
     private void printQMatrix() {
-        // Ausgabe der Q Matrix
         System.out.println();
         System.out.println();
         System.out.println("-== Q Matrix values: ==-");
@@ -117,13 +121,22 @@ public class SarsaAlgorithm {
         System.out.println();
     }
 
-    // suche in einer Zeile der Q-Matrix den hoechsten Wert
+
     /**
+     * Returns the best state with it's number and it's maximum value
+     * from the Q-Matrix as the next action for an input state.
      *
-     * @param action
-     * @return
+     * @param action - input state/action for which the next action
+     *               with maximum value is returned
+     *               from the corresponding Q-Matrix row
+     *
+     * @return int array - an array with the length of 2
+     *                  which represents the best state returned.
+     *                  The first value from this array is 'state'
+     *                  which is the number of the returned state,
+     *                  the second value is this state's Q-Value
      */
-    private int[] max(int action) {
+    private int[] getMaxAction(int action) {
         int[] ar = Q[action].clone();
         Arrays.sort(ar);
         int qMaxValue = ar[Q_SIZE - 1];
@@ -139,9 +152,16 @@ public class SarsaAlgorithm {
     }
 
     /**
+     * Selects randomly a state from the Q-Matrix as the next action for an input action.
      *
-     * @param action
-     * @return
+     * @param action - input state/action for which the next action
+     *               is chosen randomly from the corresponding Q-Matrix row
+     *
+     * @return int array - an array with the length of 2
+     *                    which represents the random state returned.
+     *                    The first value from this array is 'state'
+     *                    which is the number of the returned state,
+     *                    the second value is this state's Q-Value
      */
     private int[] getRandomAction(int action) {
         int[] ar = Q[action].clone();
@@ -150,17 +170,20 @@ public class SarsaAlgorithm {
     }
 
     /**
+     * This function bears the functionality of the ε-greedy Policy and returns either
+     * the best next state or a random state for an action given. This is depending from
+     * the value of the 'epsilon' variable, which is declared in this function.
      *
      * @param action
      * @return
      */
     private int[] epsilonGreedyPolicy(int action) {
-        double EPSILON = 0.15;
+        double epsilon = 0.15;
         double random = Math.random();
-        if (random < EPSILON) {
+        if (random < epsilon) {
             return this.getRandomAction(action);
         } else {
-            return this.max(action);
+            return this.getMaxAction(action);
         }
     }
 
@@ -182,9 +205,9 @@ public class SarsaAlgorithm {
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
-        double ALPHA = 0.7;
+        double alpha = 0.7;
         int qValue = this.epsilonGreedyPolicy(nextState)[1];
-        Q[currentState][nextState] = (int) (R[currentState][nextState] + (ALPHA * qValue));
+        Q[currentState][nextState] = (int) (R[currentState][nextState] + (alpha * qValue));
 
         currentState = nextState;
         return currentState;
@@ -231,7 +254,7 @@ public class SarsaAlgorithm {
             int newState;
             int highValue = 0;
             while (currentState < 32) {
-                highValue = max(currentState)[1];
+                highValue = getMaxAction(currentState)[1];
                 for (newState = 0; newState < Q_SIZE; newState++) {
                     if (highValue == Q[currentState][newState]) {
                         break;
