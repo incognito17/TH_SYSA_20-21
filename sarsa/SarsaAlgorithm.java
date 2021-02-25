@@ -57,7 +57,7 @@ public class SarsaAlgorithm {
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1 },  // 29
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1 },  // 30
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1 },  // 31
-            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}  // 32
+            { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
 
     };
 
@@ -112,51 +112,67 @@ public class SarsaAlgorithm {
                 System.out.print("[" + i + "]\t");
             }
             for (int j = 0; j < Q_SIZE; j++) {
-                if (Q[i][j] > 0) {
-                    System.out.print(Q[i][j] + " ");
-                } else {
-                    System.out.print(Q[i][j] + ",\t");
-                }
+                System.out.print(Q[i][j] + ",\t");
             }
             System.out.println();
         }
         System.out.println();
     }
 
+    /**
+     * Function, returning the first valid state, to which the agent can move from the inputState
+     * @param inputState
+     * @return
+     */
+    private int getFirstValidTransition(int inputState) {
+        int[] rValues = R[inputState].clone();
+        int validState = -99;
+
+        for (int i = 0; i < rValues.length; i++) {
+            if (rValues[i] > -1) {
+                validState = i;
+            }
+        }
+
+        return validState;
+    }
 
     /**
      * Returns the best state with it's number and it's maximum value
      * from the Q-Matrix as the next action for an input state.
+     * Only states from valid transitions are chosen (R-Matrix value for this
+     * action from state to randomstate mustn't be -1).
      *
-     * @param action - input state/action for which the next action
+     * @param state - input state/action for which the next action
      *               with maximum value is returned
      *               from the corresponding Q-Matrix row
      *
      * @return int array - an array with the length of 2
      *                  which represents the best state returned.
-     *                  The first value from this array is 'state'
+     *                  The first value from this array is 'bestState'
      *                  which is the number of the returned state,
      *                  the second value is this state's Q-Value
      */
-    private int[] getMaxAction(int action) {
-        int[] ar = Q[action].clone();
-        Arrays.sort(ar);
-        int qMaxValue = ar[Q_SIZE - 1];
-        int state = -1;
+    private int[] getMaxAction(int state) {
 
-        for (int i = 0; i < Q_SIZE; i++) {
-            if (Q[action][i] == qMaxValue) {
-                state = i;
-                break;
+        int[] qValues = Q[state].clone();
+        int bestState = this.getFirstValidTransition(state);
+        int qMaxValue = qValues[bestState];
+
+        for (int i = 0; i < qValues.length; i++) {
+            if ((qValues[i] >= qMaxValue) && (R[state][i] > -1)) {
+                qMaxValue = qValues[i];
+                bestState = i;
             }
         }
-        return new int[] {state, qMaxValue};
+
+        return new int[] {bestState, qMaxValue};
     }
 
     /**
      * Selects randomly a state from the Q-Matrix as the next action for an input state.
      * Only states from valid transitions are chosen (R-Matrix value for this
-     * action from state to randomstate mustn't be -1
+     * action from state to randomstate mustn't be -1).
      *
      * @param state - input state/room for which the next action
      *               is chosen randomly from the corresponding Q-Matrix row
@@ -191,7 +207,7 @@ public class SarsaAlgorithm {
      *                    the second value is this state's Q-Value
      */
     private int[] epsilonGreedyPolicy(int action) {
-        double epsilon = 0.15;
+        double epsilon = 0.4;
 
         // A random number between 0 and 1
         double random = Math.random();
@@ -218,7 +234,7 @@ public class SarsaAlgorithm {
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
-        double alpha = 0.7;
+        double alpha = 0.9;
         int qValue = this.epsilonGreedyPolicy(nextState)[1];
         Q[currentState][nextState] = (int) (R[currentState][nextState] + (alpha * qValue));
 
@@ -244,7 +260,7 @@ public class SarsaAlgorithm {
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 100;
+        int ITERATIONS = 1500;
         for (int j = 0; j < ITERATIONS; j++) {
             System.out.println("ITERATION " + j + "/" + ITERATIONS);
             for (int initial_state : INITIAL_STATES) {
@@ -260,28 +276,39 @@ public class SarsaAlgorithm {
         System.out.println();
         System.out.println("Shortest paths out of each room:");
         System.out.println();
-        int currentState;
-        for (int initial_state : INITIAL_STATES) {
-            currentState = initial_state;
+        for (int currentState : INITIAL_STATES) {
             System.out.print("Path from [" + currentState + "]: ");
+            int prevState = currentState;
             int newState;
             int highValue = 0;
-            while (currentState < 32) {
+            int loopCount = 0;
+            while (currentState <= INITIAL_STATES[INITIAL_STATES.length - 1]) {
                 highValue = getMaxAction(currentState)[1];
                 for (newState = 0; newState < Q_SIZE; newState++) {
                     if (highValue == Q[currentState][newState]) {
                         break;
                     }
                 }
+
                 if (highValue == 0) {
-                    System.out.println("Path not correctly found");
+                    System.out.println("No correct path found.");
                     break;
                 } else {
                     System.out.print("(" + currentState + ") --> ");
+                    if (prevState == newState) {
+                        loopCount++;
+                        if (loopCount > 2) {
+                            System.out.println("Agent stuck in a loop...");
+                            break;
+                        }
+                    }
+                    prevState = currentState;
                     currentState = newState;
+
                 }
+
             }
-            if (highValue != 0) {
+            if (loopCount <= 2 && highValue != 0) {
                 // Ausgabe des Zielzustandes
                 System.out.print("<<32>>\n");
             }
