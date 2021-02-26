@@ -6,7 +6,6 @@ by Prof. Dr. F. Mehler in TH Bingen. The primary source though for this code is:
 http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
  */
 
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -64,11 +63,18 @@ public class SarsaAlgorithm {
     // Q-Matrix which contains the agent's knowledge. It has the same size as the reward matrix R.
     private final int[][] Q = new int[Q_SIZE][Q_SIZE];
 
+    private final double ALPHA = 0.8;
+    private final double EPSILON = 0.4;
+
+    private final boolean qLearningMode;
+
+    private int correctPathCounter = 0;
+
     /**
      * The actual SARSA algorithm. The process in this class has three major steps (see below).
      */
-    public SarsaAlgorithm() {
-
+    public SarsaAlgorithm(boolean qLearningMode) {
+        this.qLearningMode = qLearningMode;
         /*
         Some visual output for the console indicating the start of the program.
          */
@@ -93,7 +99,7 @@ public class SarsaAlgorithm {
         calculatePaths();
 
         // Step 3. At the end the final state of the Q-Matrix is printed to the console.
-        printQMatrix();
+        this.printStats();
     }
 
     /**
@@ -117,6 +123,27 @@ public class SarsaAlgorithm {
             System.out.println();
         }
         System.out.println();
+    }
+
+    private void printStats() {
+        String algorithm;
+
+        if (this.qLearningMode) {
+            algorithm = "Q-Learning";
+        } else {
+            algorithm = "SARSA";
+        }
+
+        this.printQMatrix();
+        System.out.println();
+        System.out.println("------=== Final statistics: ===------");
+        System.out.println();
+        System.out.println("Algorithm used:\t\t\t" + algorithm);
+        System.out.println("Alpha-Value:\t\t\t" + this.ALPHA);
+        if (!this.qLearningMode) {
+            System.out.println("Epsilon-Value:\t\t\t" + this.EPSILON);
+        }
+        System.out.println("Correct paths found:\t" + this.correctPathCounter + "/" + this.INITIAL_STATES.length);
     }
 
     /**
@@ -196,7 +223,7 @@ public class SarsaAlgorithm {
     /**
      * This function bears the functionality of the ε-greedy Policy and returns either
      * the best next state or a random state for an action given. This is dependent from the
-     * value of the 'epsilon' variable and a random number, which are declared in this function.
+     * value of the 'epsilon' constant and a random number, which is generated in this function.
      *
      * @param action - input state/action for which the next action is selected with the ε-greedy Policy
      *
@@ -207,7 +234,6 @@ public class SarsaAlgorithm {
      *                    the second value is this state's Q-Value
      */
     private int[] epsilonGreedyPolicy(int action) {
-        double epsilon = 0.4;
 
         // A random number between 0 and 1
         double random = Math.random();
@@ -216,7 +242,7 @@ public class SarsaAlgorithm {
         If the random number is smaller than epsilon - return a random action,
         otherwise return an action with maximum Q-Value
          */
-        return random < epsilon ? this.getRandomAction(action) : this.getMaxAction(action);
+        return random < this.EPSILON ? this.getRandomAction(action) : this.getMaxAction(action);
     }
 
     /**
@@ -226,7 +252,13 @@ public class SarsaAlgorithm {
      */
     private int chooseNextAction(int currentState) {
 
-        int nextState = this.epsilonGreedyPolicy(currentState)[0];
+        int nextState;
+
+        if (this.qLearningMode) {
+            nextState = this.getRandomAction(currentState)[0];
+        } else {
+            nextState = this.epsilonGreedyPolicy(currentState)[0];
+        }
 
         // keine Aktualisierung der Q-Matrix bei Endzustand
         if (currentState == 32) {
@@ -234,9 +266,15 @@ public class SarsaAlgorithm {
         }
 
         // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
-        double alpha = 0.9;
-        int qValue = this.epsilonGreedyPolicy(nextState)[1];
-        Q[currentState][nextState] = (int) (R[currentState][nextState] + (alpha * qValue));
+        int qValue;
+
+        if (this.qLearningMode) {
+            qValue = this.getMaxAction(currentState)[1];
+        } else {
+            qValue = this.epsilonGreedyPolicy(nextState)[1];
+        }
+
+        Q[currentState][nextState] = (int) (R[currentState][nextState] + (this.ALPHA * qValue));
 
         currentState = nextState;
         return currentState;
@@ -260,17 +298,24 @@ public class SarsaAlgorithm {
     private void learning() {
         // starte das Training mit allen initial Werten
         // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 1500;
+        int ITERATIONS = 5000;
         for (int j = 0; j < ITERATIONS; j++) {
-            System.out.println("ITERATION " + j + "/" + ITERATIONS);
+            if (this.qLearningMode) {
+                System.out.println("ITERATION " + j + "/" + ITERATIONS + " (Q-Learning)");
+            } else {
+                System.out.println("ITERATION " + j + "/" + ITERATIONS + " (SARSA)");
+            }
             for (int initial_state : INITIAL_STATES) {
                 episode(initial_state);
             }
         }
     }
 
+    /**
+     * Calculates from the final state of the Q-Matrix all the paths
+     * that the agent gone through and prints them to the console.
+     */
     private void calculatePaths() {
-        // Ausgabe der kuerzesten Routen
         System.out.println("----------------------------------------------");
         System.out.println();
         System.out.println();
@@ -289,7 +334,6 @@ public class SarsaAlgorithm {
                         break;
                     }
                 }
-
                 if (highValue == 0) {
                     System.out.println("No correct path found.");
                     break;
@@ -304,19 +348,18 @@ public class SarsaAlgorithm {
                     }
                     prevState = currentState;
                     currentState = newState;
-
                 }
-
             }
             if (loopCount <= 2 && highValue != 0) {
                 // Ausgabe des Zielzustandes
                 System.out.print("<<32>>\n");
+                this.correctPathCounter++;
             }
         }
     }
 
     public static void main(String[] args) {
-        new SarsaAlgorithm();
+        new SarsaAlgorithm(false);
     }
 
 }
