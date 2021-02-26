@@ -17,6 +17,9 @@ public class SarsaAlgorithm {
     // Size of the Q-Matrix. This constant is important through the whole algorithm.
     private final int Q_SIZE = 33;
 
+    // Q-Matrix which contains the agent's knowledge. It has the same size as the reward matrix R.
+    private final int[][] Q = new int[Q_SIZE][Q_SIZE];
+
     // These are the starting rooms, from which the search for a way out will begin successively.
     private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
 
@@ -60,11 +63,11 @@ public class SarsaAlgorithm {
 
     };
 
-    // Q-Matrix which contains the agent's knowledge. It has the same size as the reward matrix R.
-    private final int[][] Q = new int[Q_SIZE][Q_SIZE];
+    private final int ITERATIONS = 5000;
 
     private final double ALPHA = 0.8;
-    private final double EPSILON = 0.4;
+
+    private final double EPSILON = 0.3;
 
     private final boolean qLearningMode;
 
@@ -125,6 +128,10 @@ public class SarsaAlgorithm {
         System.out.println();
     }
 
+    /**
+     * Prints the information about which algorithm was used, how many paths were found
+     * and the values of Alpha and Epsilon to the console. (Should do this at the end of the program).
+     */
     private void printStats() {
         String algorithm;
 
@@ -139,11 +146,12 @@ public class SarsaAlgorithm {
         System.out.println("------=== Final statistics: ===------");
         System.out.println();
         System.out.println("Algorithm used:\t\t\t" + algorithm);
-        System.out.println("Alpha-Value:\t\t\t" + this.ALPHA);
+        System.out.println("Alpha-Value:\t\t\t" + ALPHA);
         if (!this.qLearningMode) {
-            System.out.println("Epsilon-Value:\t\t\t" + this.EPSILON);
+            System.out.println("Epsilon-Value:\t\t\t" + EPSILON);
         }
         System.out.println("Correct paths found:\t" + this.correctPathCounter + "/" + this.INITIAL_STATES.length);
+        System.out.println("Iterations:\t\t\t\t" + ITERATIONS);
     }
 
     /**
@@ -246,9 +254,11 @@ public class SarsaAlgorithm {
     }
 
     /**
+     * Chooses the next action for the current state and updates the Q-Matrix.
+     * Does this considering which algorithm-mode is set.
      *
-     * @param currentState
-     * @return
+     * @param currentState - the state/room for which the next action is chosen.
+     * @return next state.
      */
     private int chooseNextAction(int currentState) {
 
@@ -260,14 +270,19 @@ public class SarsaAlgorithm {
             nextState = this.epsilonGreedyPolicy(currentState)[0];
         }
 
-        // keine Aktualisierung der Q-Matrix bei Endzustand
+        // If the final state is reached the Q-Matrix is not updated anymore.
         if (currentState == 32) {
             return 32;
         }
 
-        // Berechnet den neuen Belohnungswert Q-Wert mit Hilfe der R-Matrix
+
         int qValue;
 
+        /*
+        Here is the new Q-Value is calculated and inserted into the Q-Matrix for the current state.
+        If Q-Learning-Mode is active the Q-Value is always the max value for the current state.
+        Otherwise it is selected with the ε-greedy Policy.
+         */
         if (this.qLearningMode) {
             qValue = this.getMaxAction(currentState)[1];
         } else {
@@ -281,8 +296,10 @@ public class SarsaAlgorithm {
     }
 
     /**
+     * In this method an episode is completed. The agent walks through
+     * the labyrinth from each initial state until the finish is found.
      *
-     * @param initialState
+     * @param initialState - the initial state from which the agent will start
      */
     private void episode(final int initialState) {
         int currentState = initialState;
@@ -293,12 +310,9 @@ public class SarsaAlgorithm {
     }
 
     /**
-     *
+     * In this method the agent is learning and trying out different paths from all of the initial states (rooms).
      */
     private void learning() {
-        // starte das Training mit allen initial Werten
-        // Anzahl Episoden, z.B. 100
-        int ITERATIONS = 5000;
         for (int j = 0; j < ITERATIONS; j++) {
             if (this.qLearningMode) {
                 System.out.println("ITERATION " + j + "/" + ITERATIONS + " (Q-Learning)");
@@ -312,7 +326,7 @@ public class SarsaAlgorithm {
     }
 
     /**
-     * Calculates from the final state of the Q-Matrix all the paths
+     * Uses the final state of the Q-Matrix to calculate all the paths
      * that the agent gone through and prints them to the console.
      */
     private void calculatePaths() {
@@ -350,8 +364,11 @@ public class SarsaAlgorithm {
                     currentState = newState;
                 }
             }
+            /*
+            If no loop was found in the Q-Matrix & at least one column in it is greater than 0
+            then the goal is printed out and the counter of correctly found paths is increased
+             */
             if (loopCount <= 2 && highValue != 0) {
-                // Ausgabe des Zielzustandes
                 System.out.print("<<32>>\n");
                 this.correctPathCounter++;
             }
