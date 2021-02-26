@@ -21,7 +21,7 @@ public class SarsaAlgorithm {
     private final int[][] Q = new int[Q_SIZE][Q_SIZE];
 
     // These are the starting rooms, from which the search for a way out will begin successively.
-    private final int[] INITIAL_STATES = new int[] { 0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 };
+    private final int[] INITIAL_STATES = new int[] {0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
 
     // The reward matrix R which resembles the current labyrinth with valid paths and reward points
     private final int[][] R = new int[][] {
@@ -60,7 +60,6 @@ public class SarsaAlgorithm {
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1 },  // 30
             { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1 },  // 31
             { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
-
     };
 
     private final int ITERATIONS = 5000;
@@ -156,8 +155,8 @@ public class SarsaAlgorithm {
 
     /**
      * Function, returning the first valid state, to which the agent can move from the inputState
-     * @param inputState
-     * @return
+     * @param inputState - the state from which the valid path will be searched
+     * @return validState - the returned valid state to which the agent can move from inputState
      */
     private int getFirstValidTransition(int inputState) {
         int[] rValues = R[inputState].clone();
@@ -189,7 +188,6 @@ public class SarsaAlgorithm {
      *                  the second value is this state's Q-Value
      */
     private int[] getMaxAction(int state) {
-
         int[] qValues = Q[state].clone();
         int bestState = this.getFirstValidTransition(state);
         int qMaxValue = qValues[bestState];
@@ -200,7 +198,6 @@ public class SarsaAlgorithm {
                 bestState = i;
             }
         }
-
         return new int[] {bestState, qMaxValue};
     }
 
@@ -221,7 +218,6 @@ public class SarsaAlgorithm {
     private int[] getRandomAction(int state) {
         int randomState;
         int[] qValues = Q[state].clone();
-        // Sucht zufaellig einen moeglichen Wert != -1
         do {
             randomState = new Random().nextInt(qValues.length);
         } while (R[state][randomState] == -1);
