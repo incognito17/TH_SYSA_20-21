@@ -6,6 +6,7 @@ by Prof. Dr. F. Mehler in TH Bingen. The primary source though for this code is:
 http://mnemstudio.org/ai/path/q_learning_java_ex1.txt
  */
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -62,15 +63,21 @@ public class SarsaAlgorithm {
             { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
     };
 
-    private final int ITERATIONS = 5000;
+    private final int ITERATIONS = 100;
 
-    private final double ALPHA = 0.8;
+    private final double ALPHA = 0.9;
 
-    private final double EPSILON = 0.3;
+    private final double EPSILON = 0.2;
 
     private final boolean qLearningMode;
 
     private int correctPathCounter = 0;
+
+    private final ArrayList<Integer> CORRECT_PATHS_FROM_STATES = new ArrayList<>();
+
+    private int loopCounter = 0;
+
+    private final ArrayList<Integer> LOOPS_FROM_STATES = new ArrayList<>();
 
     /**
      * The actual SARSA algorithm. The process in this class has three major steps (see below).
@@ -140,7 +147,7 @@ public class SarsaAlgorithm {
             algorithm = "SARSA";
         }
 
-        this.printQMatrix();
+        // this.printQMatrix();
         System.out.println();
         System.out.println("------=== Final statistics: ===------");
         System.out.println();
@@ -150,6 +157,9 @@ public class SarsaAlgorithm {
             System.out.println("Epsilon-Value:\t\t\t" + EPSILON);
         }
         System.out.println("Correct paths found:\t" + this.correctPathCounter + "/" + this.INITIAL_STATES.length);
+        System.out.println("Correct paths from:\t\t" + CORRECT_PATHS_FROM_STATES.toString());
+        System.out.println("Stuck in loops:\t\t\t" + this.loopCounter);
+        System.out.println("Loops from:\t\t\t\t" + LOOPS_FROM_STATES.toString());
         System.out.println("Iterations:\t\t\t\t" + ITERATIONS);
     }
 
@@ -299,7 +309,6 @@ public class SarsaAlgorithm {
      */
     private void episode(final int initialState) {
         int currentState = initialState;
-        // Die Schleife sucht nun so lange bis der Endzustand erreicht ist.
         do {
             currentState = chooseNextAction(currentState);
         } while (currentState != 32);
@@ -329,10 +338,12 @@ public class SarsaAlgorithm {
         System.out.println("----------------------------------------------");
         System.out.println();
         System.out.println();
-        System.out.println("Shortest paths out of each room:");
+        System.out.println("Paths out of each room:");
         System.out.println();
+        int initState;
         for (int currentState : INITIAL_STATES) {
             System.out.print("Path from [" + currentState + "]: ");
+            initState = currentState;
             int prevState = currentState;
             int newState;
             int highValue = 0;
@@ -353,6 +364,8 @@ public class SarsaAlgorithm {
                         loopCount++;
                         if (loopCount > 2) {
                             System.out.println("Agent stuck in a loop...");
+                            LOOPS_FROM_STATES.add(initState);
+                            this.loopCounter++;
                             break;
                         }
                     }
@@ -367,6 +380,7 @@ public class SarsaAlgorithm {
             if (loopCount <= 2 && highValue != 0) {
                 System.out.print("<<32>>\n");
                 this.correctPathCounter++;
+                CORRECT_PATHS_FROM_STATES.add(initState);
             }
         }
     }
