@@ -71,21 +71,21 @@ public class SarsaAlgorithm {
 
     private final double EPSILON = 0.2;
 
-    private final boolean qLearningMode;
+    private final boolean Q_LEARNING_MODE;
 
     private int correctPathCounter = 0;
 
-    private final ArrayList<Integer> CORRECT_PATHS_FROM_STATES = new ArrayList<>();
+    private final ArrayList<Integer> correctPathsFromStates = new ArrayList<>();
 
     private int loopCounter = 0;
 
-    private final ArrayList<Integer> LOOPS_FROM_STATES = new ArrayList<>();
+    private final ArrayList<Integer> loopsFromStates = new ArrayList<>();
 
     /**
      * The actual SARSA algorithm. The process in this class has three major steps (see below).
      */
-    public SarsaAlgorithm(boolean qLearningMode) {
-        this.qLearningMode = qLearningMode;
+    public SarsaAlgorithm(boolean Q_LEARNING_MODE) {
+        this.Q_LEARNING_MODE = Q_LEARNING_MODE;
         /*
         Some visual output for the console indicating the start of the program.
          */
@@ -143,7 +143,7 @@ public class SarsaAlgorithm {
     private void printStats() {
         String algorithm;
 
-        if (this.qLearningMode) {
+        if (this.Q_LEARNING_MODE) {
             algorithm = "Q-Learning";
         } else {
             algorithm = "SARSA";
@@ -155,13 +155,13 @@ public class SarsaAlgorithm {
         System.out.println();
         System.out.println("Algorithm used:\t\t\t" + algorithm);
         System.out.println("Alpha-Value:\t\t\t" + ALPHA);
-        if (!this.qLearningMode) {
+        if (!this.Q_LEARNING_MODE) {
             System.out.println("Epsilon-Value:\t\t\t" + EPSILON);
         }
         System.out.println("Correct paths found:\t" + this.correctPathCounter + "/" + this.INITIAL_STATES.length);
-        System.out.println("Correct paths from:\t\t" + CORRECT_PATHS_FROM_STATES.toString());
+        System.out.println("Correct paths from:\t\t" + correctPathsFromStates.toString());
         System.out.println("Stuck in loops:\t\t\t" + this.loopCounter);
-        System.out.println("Loops from:\t\t\t\t" + LOOPS_FROM_STATES.toString());
+        System.out.println("Loops from:\t\t\t\t" + loopsFromStates.toString());
         System.out.println("Iterations:\t\t\t\t" + ITERATIONS);
     }
 
@@ -189,7 +189,7 @@ public class SarsaAlgorithm {
      * Only states from valid transitions are chosen (R-Matrix value for this
      * action from state to randomstate mustn't be -1).
      *
-     * @param state - input state/action for which the next action
+     * @param inputState - input state/action for which the next action
      *               with maximum value is returned
      *               from the corresponding Q-Matrix row
      *
@@ -199,13 +199,13 @@ public class SarsaAlgorithm {
      *                  which is the number of the returned state,
      *                  the second value is this state's Q-Value
      */
-    private int[] getMaxAction(int state) {
-        int[] qValues = Q[state].clone();
-        int bestState = this.getFirstValidTransition(state);
+    private int[] getMaxAction(int inputState) {
+        int[] qValues = Q[inputState].clone();
+        int bestState = this.getFirstValidTransition(inputState);
         int qMaxValue = qValues[bestState];
 
         for (int i = 0; i < qValues.length; i++) {
-            if ((qValues[i] >= qMaxValue) && (R[state][i] > -1)) {
+            if ((qValues[i] >= qMaxValue) && (R[inputState][i] > -1)) {
                 qMaxValue = qValues[i];
                 bestState = i;
             }
@@ -272,7 +272,7 @@ public class SarsaAlgorithm {
 
         int nextState;
 
-        if (this.qLearningMode) {
+        if (this.Q_LEARNING_MODE) {
             nextState = this.getRandomAction(currentState)[0];
         } else {
             nextState = this.epsilonGreedyPolicy(currentState)[0];
@@ -291,7 +291,7 @@ public class SarsaAlgorithm {
         If Q-Learning-Mode is active the Q-Value is always the max value for the current state.
         Otherwise it is selected with the ε-greedy Policy.
          */
-        if (this.qLearningMode) {
+        if (this.Q_LEARNING_MODE) {
             qValue = this.getMaxAction(currentState)[1];
         } else {
             qValue = this.epsilonGreedyPolicy(nextState)[1];
@@ -321,7 +321,7 @@ public class SarsaAlgorithm {
      */
     private void learning() {
         for (int j = 0; j < ITERATIONS; j++) {
-            if (this.qLearningMode) {
+            if (this.Q_LEARNING_MODE) {
                 System.out.println("ITERATION " + j + "/" + ITERATIONS + " (Q-Learning)");
             } else {
                 System.out.println("ITERATION " + j + "/" + ITERATIONS + " (SARSA)");
@@ -366,7 +366,7 @@ public class SarsaAlgorithm {
                         loopCount++;
                         if (loopCount > 2) {
                             System.out.println("Agent stuck in a loop...");
-                            LOOPS_FROM_STATES.add(initState);
+                            loopsFromStates.add(initState);
                             this.loopCounter++;
                             break;
                         }
@@ -382,7 +382,7 @@ public class SarsaAlgorithm {
             if (loopCount <= 2 && highValue != 0) {
                 System.out.print("<<32>>\n");
                 this.correctPathCounter++;
-                CORRECT_PATHS_FROM_STATES.add(initState);
+                correctPathsFromStates.add(initState);
             }
         }
     }
