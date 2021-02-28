@@ -11,7 +11,7 @@ import java.util.Random;
 
 /**
  * This class performs the reinforcement learning algorithm "SARSA" on a 32-room maze and searches with the help of it
- * a shortest possible way out, out of each room. (Optionally it can do the same task with the Q-Learning algorithm).
+ * a possible way out, out of each room. (Optionally it can do the same task with the Q-Learning algorithm).
  */
 public class SarsaAlgorithm {
 
@@ -26,7 +26,6 @@ public class SarsaAlgorithm {
             16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
 
     // The reward matrix R which resembles the current labyrinth with valid paths and reward points
-
     private final int[][] R = new int[][] {
 
             // 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32
@@ -65,20 +64,28 @@ public class SarsaAlgorithm {
             { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
     };
 
-    private final int ITERATIONS = 1000;
+    // How many times the algorithm will repeat
+    private final int ITERATIONS = 10000;
 
+    // The weight of the reward
     private final double ALPHA = 0.8;
 
-    private final double EPSILON = 0.3;
+    // The rate of choosing a random state in the next action. Relevant for SARSA.
+    private final double EPSILON = 0.2;
 
+    // If true, the Q-Learning algorithm will run.
     private final boolean Q_LEARNING_MODE;
 
+    // How many paths were correctly found.
     private int correctPathCounter = 0;
 
+    // Collects throughout the run the initial states from which the paths were correctly found.
     private final ArrayList<Integer> correctPathsFromStates = new ArrayList<>();
 
+    // How many times the agent got stuck in a loop.
     private int loopCounter = 0;
 
+    // From which initial states the paths contained a loop
     private final ArrayList<Integer> loopsFromStates = new ArrayList<>();
 
     /**
@@ -104,12 +111,12 @@ public class SarsaAlgorithm {
         learning();
 
         /*
-        Step 2. In this step all the shortest paths from each single room
+        Step 2. In this step all the available paths from each single room
         (if such were found) are read and printed out to the console.
          */
         calculatePaths();
 
-        // Step 3. At the end the final state of the Q-Matrix is printed to the console.
+        // Step 3. At the end the final state of the Q-Matrix and statistics are printed to the console.
         this.printStats();
     }
 
@@ -187,9 +194,9 @@ public class SarsaAlgorithm {
      * Returns the best state with it's number and it's maximum value
      * from the Q-Matrix as the next action for an input state.
      * Only states from valid transitions are chosen (R-Matrix value for this
-     * action from state to randomstate mustn't be -1).
+     * action from inputState to bestState mustn't be -1).
      *
-     * @param inputState - input state/action for which the next action
+     * @param inputState - input state for which the next action
      *               with maximum value is returned
      *               from the corresponding Q-Matrix row
      *
@@ -201,6 +208,8 @@ public class SarsaAlgorithm {
      */
     private int[] getMaxAction(int inputState) {
         int[] qValues = Q[inputState].clone();
+
+        // Just in Case: make sure that only valid transitions will be considered.
         int bestState = this.getFirstValidTransition(inputState);
         int qMaxValue = qValues[bestState];
 
@@ -216,14 +225,14 @@ public class SarsaAlgorithm {
     /**
      * Selects randomly a state from the Q-Matrix as the next action for an input state.
      * Only states from valid transitions are chosen (R-Matrix value for this
-     * action from state to randomstate mustn't be -1).
+     * action from inputState to randomState mustn't be -1).
      *
-     * @param inputState - input state/room for which the next action
+     * @param inputState - input state/room for which the next action/state
      *               is chosen randomly from the corresponding Q-Matrix row
      *
      * @return int array - an array with the length of 2
      *                    which represents the random state returned.
-     *                    The first value from this array is 'state'
+     *                    The first value from this array is 'randomState'
      *                    which is the number of the returned state,
      *                    the second value is this state's Q-Value
      */
@@ -239,9 +248,9 @@ public class SarsaAlgorithm {
     /**
      * This function bears the functionality of the ε-greedy Policy and returns either
      * the best next state or a random state for an action given. This is dependent from the
-     * value of the 'epsilon' constant and a random number, which is generated in this function.
+     * value of the 'EPSILON' constant and a random number, which is generated in this function.
      *
-     * @param action - input state/action for which the next action is selected with the ε-greedy Policy
+     * @param action - input state/action for which the next state is selected with the ε-greedy Policy
      *
      * @return int array - an array with the length of 2
      *                    which represents the state returned.
@@ -262,8 +271,8 @@ public class SarsaAlgorithm {
     }
 
     /**
-     * Chooses the next action for the current state and updates the Q-Matrix.
-     * Does this considering which algorithm-mode is set.
+     * Chooses the next action for the current state and updates the Q-Matrix
+     * in each run and each episode. Does this considering which algorithm-mode is set.
      *
      * @param currentState - the state/room for which the next action is chosen.
      * @return next state.
@@ -272,7 +281,11 @@ public class SarsaAlgorithm {
 
         int nextState;
 
-        if (this.Q_LEARNING_MODE) {
+        /*
+         If Q_LEARNING_MODE is true, the next state will be selected randomly
+         otherwise the Epsilon-Greedy-Policy is used.
+         */
+        if (Q_LEARNING_MODE) {
             nextState = this.getRandomAction(currentState)[0];
         } else {
             nextState = this.epsilonGreedyPolicy(currentState)[0];
@@ -286,19 +299,21 @@ public class SarsaAlgorithm {
         int qValue;
 
         /*
-        Here is the new Q-Value is calculated and inserted into the Q-Matrix for the current state.
-        If Q-Learning-Mode is active the Q-Value is always the max value for the current state.
+        Here the new Q-Value is calculated and inserted into the Q-Matrix for the current state.
+        If Q-Learning-Mode is active the Q-Value is always the max value for the next state.
         Otherwise it is selected with the ε-greedy Policy.
          */
-        if (this.Q_LEARNING_MODE) {
+        if (Q_LEARNING_MODE) {
             qValue = this.getMaxAction(nextState)[1];
         } else {
             qValue = this.epsilonGreedyPolicy(nextState)[1];
         }
 
+        // Updates the Q-Matrix.
         Q[currentState][nextState] = (int) (R[currentState][nextState] + (this.ALPHA * qValue));
 
         currentState = nextState;
+
         return currentState;
     }
 
@@ -356,13 +371,29 @@ public class SarsaAlgorithm {
                         break;
                     }
                 }
+
+                /*
+                 If there are only zeroes in a Q-Matrix row, the path wasn't found correctly.
+                 (Probably not enough Iterations)
+                 */
                 if (highValue == 0) {
                     System.out.println("No correct path found.");
                     break;
                 } else {
                     System.out.print("(" + currentState + ") --> ");
+
+                    /*
+                     Checks if there are loops, by comparing the previous state
+                     and the state after the current state.
+                     */
                     if (prevState == newState) {
                         loopCount++;
+
+                        /*
+                         If there are more then 2 repetitions, increment the loop counter
+                         and add the initial state to the "Loop-ArrayList".
+                         Start with the next initial state after that.
+                         */
                         if (loopCount > 2) {
                             System.out.println("Agent stuck in a loop...");
                             loopsFromStates.add(initState);
@@ -375,8 +406,8 @@ public class SarsaAlgorithm {
                 }
             }
             /*
-            If no loop was found in the Q-Matrix & at least one column in it is greater than 0
-            then the goal is printed out and the counter of correctly found paths is increased
+            If no loop was found in the Q-Matrix & at least one column for the current row in it
+            is greater than 0, then the goal is printed out and the counter of correctly found paths is increased.
              */
             if (loopCount <= 2 && highValue != 0) {
                 System.out.print("<<32>>\n");
@@ -387,7 +418,7 @@ public class SarsaAlgorithm {
     }
 
     public static void main(String[] args) {
-        new SarsaAlgorithm(false);
+        new SarsaAlgorithm(true);
     }
 
 }
