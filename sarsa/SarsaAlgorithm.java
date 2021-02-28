@@ -67,9 +67,9 @@ public class SarsaAlgorithm {
 
     private final int ITERATIONS = 1000;
 
-    private final double ALPHA = 0.9;
+    private final double ALPHA = 0.8;
 
-    private final double EPSILON = 0.2;
+    private final double EPSILON = 0.3;
 
     private final boolean Q_LEARNING_MODE;
 
@@ -291,7 +291,7 @@ public class SarsaAlgorithm {
         Otherwise it is selected with the ε-greedy Policy.
          */
         if (this.Q_LEARNING_MODE) {
-            qValue = this.getMaxAction(currentState)[1];
+            qValue = this.getMaxAction(nextState)[1];
         } else {
             qValue = this.epsilonGreedyPolicy(nextState)[1];
         }
