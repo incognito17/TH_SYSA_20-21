@@ -22,9 +22,11 @@ public class SarsaAlgorithm {
     private final int[][] Q = new int[Q_SIZE][Q_SIZE];
 
     // These are the starting rooms, from which the search for a way out will begin successively.
-    private final int[] INITIAL_STATES = new int[] {0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+    private final int[] INITIAL_STATES = new int[] {0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
 
     // The reward matrix R which resembles the current labyrinth with valid paths and reward points
+
     private final int[][] R = new int[][] {
 
             // 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32
@@ -63,7 +65,7 @@ public class SarsaAlgorithm {
             { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
     };
 
-    private final int ITERATIONS = 100;
+    private final int ITERATIONS = 10000;
 
     private final double ALPHA = 0.9;
 
