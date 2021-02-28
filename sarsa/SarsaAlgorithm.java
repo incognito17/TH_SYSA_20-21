@@ -65,7 +65,7 @@ public class SarsaAlgorithm {
             { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, 100}   // 32
     };
 
-    private final int ITERATIONS = 10000;
+    private final int ITERATIONS = 1000;
 
     private final double ALPHA = 0.9;
 
@@ -149,7 +149,7 @@ public class SarsaAlgorithm {
             algorithm = "SARSA";
         }
 
-        // this.printQMatrix();
+        this.printQMatrix();
         System.out.println();
         System.out.println("------=== Final statistics: ===------");
         System.out.println();
@@ -218,7 +218,7 @@ public class SarsaAlgorithm {
      * Only states from valid transitions are chosen (R-Matrix value for this
      * action from state to randomstate mustn't be -1).
      *
-     * @param state - input state/room for which the next action
+     * @param inputState - input state/room for which the next action
      *               is chosen randomly from the corresponding Q-Matrix row
      *
      * @return int array - an array with the length of 2
@@ -227,12 +227,12 @@ public class SarsaAlgorithm {
      *                    which is the number of the returned state,
      *                    the second value is this state's Q-Value
      */
-    private int[] getRandomAction(int state) {
+    private int[] getRandomAction(int inputState) {
         int randomState;
-        int[] qValues = Q[state].clone();
+        int[] qValues = Q[inputState].clone();
         do {
             randomState = new Random().nextInt(qValues.length);
-        } while (R[state][randomState] == -1);
+        } while (R[inputState][randomState] == -1);
         return new int[] {randomState, qValues[randomState]};
     }
 
@@ -258,7 +258,7 @@ public class SarsaAlgorithm {
         If the random number is smaller than epsilon - return a random action,
         otherwise return an action with maximum Q-Value
          */
-        return random < this.EPSILON ? this.getRandomAction(action) : this.getMaxAction(action);
+        return random < EPSILON ? this.getRandomAction(action) : this.getMaxAction(action);
     }
 
     /**
@@ -282,7 +282,6 @@ public class SarsaAlgorithm {
         if (currentState == 32) {
             return 32;
         }
-
 
         int qValue;
 
