@@ -65,7 +65,7 @@ public class SarsaAlgorithm {
     };
 
     // How many times the algorithm will repeat
-    private final int ITERATIONS = 10000;
+    private final int ITERATIONS = 1000;
 
     // The weight of the reward
     private final double ALPHA = 0.8;
@@ -418,7 +418,7 @@ public class SarsaAlgorithm {
     }
 
     public static void main(String[] args) {
-        new SarsaAlgorithm(true);
+        new SarsaAlgorithm(false);
     }
 
 }
